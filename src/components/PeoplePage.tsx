@@ -1,8 +1,28 @@
+import { useEffect, useState } from 'react';
+import { getPeople } from '../api';
+import { Person } from '../types/Person';
 import { PeopleFilters } from './PeopleFilters';
-import { Loader } from './Loader';
 import { PeopleTable } from './PeopleTable';
 
 export const PeoplePage = () => {
+  const [people, setPeople] = useState<Person[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    setLoading(true);
+    setErrorMessage('');
+
+    getPeople()
+      .then(setPeople)
+      .catch(() => {
+        setErrorMessage('Something went wrong');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <>
       <h1 className="title">People Page</h1>
@@ -14,17 +34,11 @@ export const PeoplePage = () => {
           </div>
 
           <div className="column">
-            <div className="box table-container">
-              <Loader />
-
-              <p data-cy="peopleLoadingError">Something went wrong</p>
-
-              <p data-cy="noPeopleMessage">There are no people on the server</p>
-
-              <p>There are no people matching the current search criteria</p>
-
-              <PeopleTable />
-            </div>
+            <PeopleTable
+              people={people}
+              isLoading={loading}
+              errorMessage={errorMessage}
+            />
           </div>
         </div>
       </div>
