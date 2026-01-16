@@ -1,9 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Person } from '../types/Person';
 import { Loader } from './Loader';
 import { PersonLink } from './PersonLink';
+import { SearchLink } from './SearchLink';
 
 interface Props {
   people: Person[];
@@ -17,6 +18,10 @@ export const PeopleTable: React.FC<Props> = ({
   errorMessage,
 }) => {
   const { slug: selectedSlug } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const sort = searchParams.get('sort') || '';
+  const order = searchParams.get('order') || '';
 
   const findPersonByName = (name: string | null) => {
     if (!name) {
@@ -28,6 +33,18 @@ export const PeopleTable: React.FC<Props> = ({
 
   const showNoPeopleMessage =
     !isLoading && !errorMessage && people.length === 0;
+
+  const getSortParams = (column: string) => {
+    if (sort !== column) {
+      return { sort: column, order: null };
+    }
+
+    if (!order) {
+      return { sort: column, order: 'desc' };
+    }
+
+    return { sort: null, order: null };
+  };
 
   return (
     <div className="block">
@@ -54,44 +71,68 @@ export const PeopleTable: React.FC<Props> = ({
                 <th>
                   <span className="is-flex is-flex-wrap-nowrap">
                     Name
-                    <a href="#/people?sort=name">
+                    <SearchLink params={getSortParams('name')}>
                       <span className="icon">
-                        <i className="fas fa-sort" />
+                        <i
+                          className={classNames('fas', {
+                            'fa-sort': sort !== 'name',
+                            'fa-sort-up': sort === 'name' && !order,
+                            'fa-sort-down': sort === 'name' && order === 'desc',
+                          })}
+                        />
                       </span>
-                    </a>
+                    </SearchLink>
                   </span>
                 </th>
 
                 <th>
                   <span className="is-flex is-flex-wrap-nowrap">
                     Sex
-                    <a href="#/people?sort=sex">
+                    <SearchLink params={getSortParams('sex')}>
                       <span className="icon">
-                        <i className="fas fa-sort" />
+                        <i
+                          className={classNames('fas', {
+                            'fa-sort': sort !== 'sex',
+                            'fa-sort-up': sort === 'sex' && !order,
+                            'fa-sort-down': sort === 'sex' && order === 'desc',
+                          })}
+                        />
                       </span>
-                    </a>
+                    </SearchLink>
                   </span>
                 </th>
 
                 <th>
                   <span className="is-flex is-flex-wrap-nowrap">
                     Born
-                    <a href="#/people?sort=born&order=desc">
+                    <SearchLink params={getSortParams('born')}>
                       <span className="icon">
-                        <i className="fas fa-sort-up" />
+                        <i
+                          className={classNames('fas', {
+                            'fa-sort': sort !== 'born',
+                            'fa-sort-up': sort === 'born' && !order,
+                            'fa-sort-down': sort === 'born' && order === 'desc',
+                          })}
+                        />
                       </span>
-                    </a>
+                    </SearchLink>
                   </span>
                 </th>
 
                 <th>
                   <span className="is-flex is-flex-wrap-nowrap">
                     Died
-                    <a href="#/people?sort=died">
+                    <SearchLink params={getSortParams('died')}>
                       <span className="icon">
-                        <i className="fas fa-sort" />
+                        <i
+                          className={classNames('fas', {
+                            'fa-sort': sort !== 'died',
+                            'fa-sort-up': sort === 'died' && !order,
+                            'fa-sort-down': sort === 'died' && order === 'desc',
+                          })}
+                        />
                       </span>
-                    </a>
+                    </SearchLink>
                   </span>
                 </th>
 
