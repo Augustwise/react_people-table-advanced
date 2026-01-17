@@ -112,6 +112,7 @@ export const PeoplePage = () => {
           <div className="column">
             <PeopleTable
               people={sortedPeople}
+              allPeople={people}
               isLoading={loading}
               errorMessage={errorMessage}
             />

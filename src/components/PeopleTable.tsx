@@ -8,12 +8,14 @@ import { SearchLink } from './SearchLink';
 
 interface Props {
   people: Person[];
+  allPeople: Person[];
   isLoading: boolean;
   errorMessage: string;
 }
 
 export const PeopleTable: React.FC<Props> = ({
   people,
+  allPeople,
   isLoading,
   errorMessage,
 }) => {
@@ -28,7 +30,7 @@ export const PeopleTable: React.FC<Props> = ({
       return null;
     }
 
-    return people.find(person => person.name === name) || null;
+    return allPeople.find(person => person.name === name) || null;
   };
 
   const showNoPeopleMessage =
