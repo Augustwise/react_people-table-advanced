@@ -13,6 +13,9 @@ export const PeoplePage = () => {
 
   const sort = searchParams.get('sort') || '';
   const order = searchParams.get('order') || '';
+  const sex = searchParams.get('sex') || '';
+  const query = searchParams.get('query') || '';
+  const centuries = searchParams.getAll('centuries');
 
   useEffect(() => {
     setLoading(true);
@@ -28,8 +31,40 @@ export const PeoplePage = () => {
       });
   }, []);
 
+  const filteredPeople = useMemo(() => {
+    let result = [...people];
+
+    if (sex) {
+      result = result.filter(person => person.sex === sex);
+    }
+
+    if (query) {
+      const normalizedQuery = query.toLowerCase().trim();
+
+      result = result.filter(person => {
+        const { name, motherName, fatherName } = person;
+
+        return (
+          name.toLowerCase().includes(normalizedQuery) ||
+          motherName?.toLowerCase().includes(normalizedQuery) ||
+          fatherName?.toLowerCase().includes(normalizedQuery)
+        );
+      });
+    }
+
+    if (centuries.length > 0) {
+      result = result.filter(person => {
+        const century = Math.ceil(person.born / 100);
+
+        return centuries.includes(century.toString());
+      });
+    }
+
+    return result;
+  }, [people, sex, query, centuries]);
+
   const sortedPeople = useMemo(() => {
-    const copy = [...people];
+    const copy = [...filteredPeople];
 
     if (sort === 'name') {
       copy.sort((a, b) => {
@@ -60,7 +95,7 @@ export const PeoplePage = () => {
     }
 
     return copy;
-  }, [people, sort, order]);
+  }, [filteredPeople, sort, order]);
 
   return (
     <>
