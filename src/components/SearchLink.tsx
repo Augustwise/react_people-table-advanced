@@ -22,21 +22,13 @@ export const SearchLink: React.FC<Props> = ({
 }) => {
   const [searchParams] = useSearchParams();
 
-  if (!params) {
-    return (
-      <NavLink to={to || ''} {...props}>
-        {children}
-      </NavLink>
-    );
-  }
-
   const targetTo = typeof to === 'object' ? to : { pathname: to };
 
   return (
     <NavLink
       to={{
         ...targetTo,
-        search: getSearchWith(searchParams, params),
+        search: getSearchWith(searchParams, params || {}),
       }}
       {...props}
     >
